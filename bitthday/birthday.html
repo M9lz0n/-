@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>З Днем народження! 🎉</title>
+<style>
+:root{--bg1:#ffd1e8;--bg2:#ffe9a8;--bg3:#c9e7ff;--text:#4a1f4f;--card:rgba(255,255,255,.75);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#3b1550;--bg2:#5a1f3f;--bg3:#1b2a5c;--text:#fff1fb;--card:rgba(20,10,40,.6);color-scheme:dark}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{font-family:Georgia,'Times New Roman',serif;color:var(--text);background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));background-size:300% 300%;animation:bg 12s ease infinite;min-height:100vh;overflow-x:hidden}
+@keyframes bg{50%{background-position:100% 100%}}
+#emo{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+#emo span{position:absolute;animation:chaos var(--d) ease-in-out infinite;animation-delay:var(--l)}
+@keyframes chaos{0%{transform:translate(0,0) scale(.5) rotate(0)}20%{transform:translate(var(--x),var(--y)) scale(1.9) rotate(200deg)}45%{transform:translate(calc(var(--x)*-1),var(--y)) scale(.7) rotate(-120deg)}70%{transform:translate(var(--y),calc(var(--x)*-1)) scale(2.2) rotate(380deg)}100%{transform:translate(0,0) scale(.5) rotate(720deg)}}
+#intro{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;background:linear-gradient(135deg,var(--bg1),var(--bg3));text-align:center;padding:24px}
+#intro button{font:inherit;font-size:1.4rem;padding:18px 34px;border:0;border-radius:50px;background:#ff4f9a;color:#fff;box-shadow:0 8px 24px rgba(255,79,154,.5);animation:pulse 1.2s infinite}
+@keyframes pulse{50%{transform:scale(1.1)}}
+.gift{font-size:6rem;animation:pulse 1.2s infinite}
+main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:0 18px 60px}
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+h1{font-size:clamp(2.2rem,10vw,3.8rem);margin:0 0 12px;line-height:1.1;text-shadow:0 2px 12px rgba(255,255,255,.5)}
+.wish{background:var(--card);border-radius:22px;padding:22px;font-size:1.15rem;line-height:1.6;backdrop-filter:blur(6px);margin:16px 0}
+.hint{text-align:center;margin:40px 0 14px;font-size:1.2rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.ph{position:relative;aspect-ratio:3/4;border-radius:18px;overflow:hidden;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:3.5rem;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:manipulation;box-shadow:0 6px 18px rgba(0,0,0,.2);transition:transform .2s}
+.ph:active{transform:scale(.97)}
+.ph img{width:100%;height:100%;object-fit:cover;pointer-events:none}
+#vid{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;flex-direction:column;color:#fff;text-align:center;padding:20px}
+#vid.on{display:flex}
+#vid video{max-width:100%;max-height:85vh;border-radius:18px}
+#mute{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:10px;z-index:15;border:0;border-radius:50%;width:44px;height:44px;font-size:1.3rem;background:var(--card);display:none}
+</style>
+</head>
+<body>
+<div id="emo"></div>
+<button id="mute" aria-label="Звук">🔊</button>
+
+<div id="intro">
+  <div class="gift">🎁</div>
+  <p style="font-size:1.3rem;margin:0">Для тебе є сюрприз…</p>
+  <button id="open">Відкрити</button>
+</div>
+
+<main>
+  <section class="hero">
+    <h1>🎂 З Днем народження, <span id="nm"></span>! 🎉</h1>
+    <div class="wish">Нехай цей день буде найсвітлішим, а поруч будуть лише ті, кого любиш. Здоров’я, радості, тепла в домі та щоб усі мрії здійснювались! Дякую, що ти в моєму житті 💖</div>
+    <div style="font-size:2rem">⬇️</div>
+  </section>
+
+  <p class="hint">📸 Затисни фото — і воно оживе ✨</p>
+  <div class="grid" id="grid"></div>
+</main>
+
+<div id="vid"><div id="vbox"></div></div>
+
+<script>
+// ===== НАЛАШТУВАННЯ =====
+var NAME = "хресна";
+// Сюди підставляються фото та відео (data: або шлях до файлу)
+var PHOTOS = [
+  {photo:"photo_2026-10-31_17-11-03.jpg", video:"video_2026-10-31_17-10-49.mp4"},
+  {photo:"photo_2026-10-31_17-13-00.jpg", video:"video_2026-10-31_17-13-06.mp4"},
+  {photo:"photo_2026-10-31_17-14-53.jpg", video:"video_2026-10-31_17-14-34.mp4"},
+  {photo:"photo_2026-10-31_17-15-04.jpg", video:"video_2026-10-31_17-15-00.mp4"},
+  {photo:"photo_2026-10-31_17-15-37.jpg", video:"video_2026-10-31_17-15-41.mp4"},
+  {photo:"photo_2026-10-31_17-15-46.jpg", video:"video_2026-10-31_17-15-49.mp4"},
+  {photo:"photo_2026-10-31_17-15-54.jpg", video:"video_2026-10-31_17-16-08.mp4"},
+  {photo:"photo_2026-10-31_17-16-14.jpg", video:"video_2026-10-31_17-16-20.mp4"}
+];
+// ========================
+document.getElementById('nm').textContent = NAME;
+
+// Емодзі
+var E = ["🎉","🎂","🎈","🥳","🎁","💖","✨","🌸","🍰","🎊","😍","🌟","🦄","🍾","💐","🎀"];
+var emo = document.getElementById('emo');
+for (var i=0;i<34;i++){
+  var s = document.createElement('span');
+  s.textContent = E[Math.floor(Math.random()*E.length)];
+  s.style.left = Math.random()*92+'%';
+  s.style.top = Math.random()*92+'%';
+  s.style.fontSize = (22+Math.random()*26)+'px';
+  s.style.setProperty('--d',(3+Math.random()*5)+'s');
+  s.style.setProperty('--l',(-Math.random()*6)+'s');
+  s.style.setProperty('--x',(Math.random()*160-80)+'px');
+  s.style.setProperty('--y',(Math.random()*160-80)+'px');
+  emo.appendChild(s);
+}
+
+// Галерея
+var grid = document.getElementById('grid');
+var vid = document.getElementById('vid'), vbox = document.getElementById('vbox');
+var holdT = null;
+PHOTOS.forEach(function(p,i){
+  var d = document.createElement('div');
+  d.className = 'ph';
+  if (p.photo){ var im=document.createElement('img'); im.src=p.photo; d.appendChild(im); }
+  else d.textContent = ['👩','💃','🌹','👑'][i%4];
+  d.addEventListener('contextmenu',function(e){e.preventDefault()});
+  d.addEventListener('pointerdown',function(){
+    clearTimeout(holdT);
+    holdT = setTimeout(function(){ show(p); },450);
+  });
+  ['pointerup','pointerleave','pointercancel'].forEach(function(ev){
+    d.addEventListener(ev,function(){ clearTimeout(holdT); hide(); });
+  });
+  grid.appendChild(d);
+});
+function show(p){
+  vbox.innerHTML = '';
+  if (p.video){
+    var v = document.createElement('video');
+    v.src = p.video; v.autoplay = true; v.loop = true; v.playsInline = true;
+    vbox.appendChild(v); v.play().catch(function(){});
+  } else {
+    vbox.innerHTML = '<div style="font-size:5rem">🎬</div><p style="font-size:1.2rem">Тут буде відео ✨</p>';
+  }
+  vid.classList.add('on');
+}
+function hide(){
+  vid.classList.remove('on');
+  var v = vbox.querySelector('video'); if (v) v.pause();
+}
+
+// Happy Birthday через Web Audio
+var ctx, muted = false, master, playing = false;
+var N = {C4:261.63,D4:293.66,E4:329.63,F4:349.23,G4:392,A4:440,B4:493.88,C5:523.25,D5:587.33,E5:659.25,F5:698.46,G5:783.99};
+var tune = [["G4",.75],["G4",.25],["A4",1],["G4",1],["C5",1],["B4",2],
+ ["G4",.75],["G4",.25],["A4",1],["G4",1],["D5",1],["C5",2],
+ ["G4",.75],["G4",.25],["G5",1],["E5",1],["C5",1],["B4",1],["A4",1],
+ ["F5",.75],["F5",.25],["E5",1],["C5",1],["D5",1],["C5",2.5]];
+function playTune(){
+  var t = ctx.currentTime + .1, beat = .5;
+  tune.forEach(function(n){
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'triangle'; o.frequency.value = N[n[0]];
+    var dur = n[1]*beat;
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(.5,t+.03);
+    g.gain.exponentialRampToValueAtTime(.001,t+dur*.95);
+    o.connect(g); g.connect(master);
+    o.start(t); o.stop(t+dur);
+    t += dur;
+  });
+  return t - ctx.currentTime;
+}
+function loop(){
+  if (!playing) return;
+  var len = playTune();
+  setTimeout(loop,(len+1)*1000);
+}
+document.getElementById('open').onclick = function(){
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('mute').style.display = 'block';
+  try{
+    ctx = new (window.AudioContext||window.webkitAudioContext)();
+    master = ctx.createGain(); master.gain.value = .6; master.connect(ctx.destination);
+    playing = true; loop();
+  }catch(e){}
+};
+document.getElementById('mute').onclick = function(){
+  muted = !muted;
+  if (master) master.gain.value = muted ? 0 : .6;
+  this.textContent = muted ? '🔇' : '🔊';
+};
+</script>
+</body>
+</html>
